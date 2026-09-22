@@ -36,6 +36,8 @@ public partial class PauseMenu : Panel
         SoundManager.Song.PitchScale = (float)attempt.Speed;
         SoundManager.Song.StreamPaused = !runner.Playing;
 
+        if (runner.VideoTextureRenderer != null) { runner.VideoTextureRenderer.IsPlaying = runner.Playing; }
+
         MenuCursor.Instance.UpdateVisible(Shown && SettingsManager.Instance.Settings.UseCursorInMenus.Value);
 
         if (Shown)

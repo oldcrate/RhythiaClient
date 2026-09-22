@@ -697,9 +697,7 @@ size = 5.0
 
 [node name="Video" type="MeshInstance3D" parent="Runner" unique_id=1036410191]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.479675, -0.459572, -99.9929)
-visible = false
 material_override = SubResource("StandardMaterial3D_rj3ky")
-transparency = 1.0
 cast_shadow = 0
 mesh = SubResource("QuadMesh_3p7x2")
 skeleton = NodePath("../..")
@@ -708,6 +706,14 @@ skeleton = NodePath("../..")
 transparent_bg = true
 canvas_item_default_texture_filter = 2
 size = Vector2i(1920, 1080)
+
+[node name="VideoTextureRect" type="TextureRect" parent="Runner/Video/VideoViewport" unique_id=609912877]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="QuitOverlay" type="Panel" parent="." unique_id=316579954]
 visible = false

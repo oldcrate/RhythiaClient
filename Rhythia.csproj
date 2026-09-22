@@ -8,6 +8,10 @@
   <ItemGroup>
     <None Include=".editorconfig" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="external/ffmpeg/bin/ffmpeg.exe" CopyToOutputDirectory="PreserveNewest" Link="tools/ffmpeg/ffmpeg.exe" />
+    <None Include="external/ffmpeg/bin/ffprobe.exe" CopyToOutputDirectory="PreserveNewest" Link="tools/ffmpeg/ffprobe.exe" />
+  </ItemGroup>
   <PropertyGroup>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
