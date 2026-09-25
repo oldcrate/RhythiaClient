@@ -27,6 +27,8 @@ public class FFmpegDecoder
 
     private Thread readThread;
 
+    private Process ffmpegProc;
+
     public FFmpegDecoder(string ffmpegPath, string ffprobePath, string inputPath)
     {
         InputPath = inputPath;
@@ -84,7 +86,7 @@ public class FFmpegDecoder
             CreateNoWindow = true
         };
 
-        Process ffmpegProc = Process.Start(processStartInfo);
+        ffmpegProc = Process.Start(processStartInfo);
         var ffmpegStdoutStream = ffmpegProc.StandardOutput.BaseStream;
 
         readThread = new Thread(() =>
@@ -110,5 +112,20 @@ public class FFmpegDecoder
         }){ IsBackground = true };
 
         readThread.Start();
+    }
+
+    public void KillExistingProcess()
+    {
+        if (ffmpegProc != null && !ffmpegProc.HasExited)
+        {
+            try { ffmpegProc.Kill(); }
+            catch (Exception exception) { Logger.Log(exception.Message); }
+        }
+    }
+
+    public void ClearDecodedFrames()
+    {
+        if (readThread.IsAlive) { readThread.Join(); }
+        DecodedFrames.Clear();
     }
 }

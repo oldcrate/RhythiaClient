@@ -29,7 +29,7 @@ public partial class Runner : Node3D
     private bool eventsConnected = false;
     private double[] noteTimestamps;
 
-    private FFmpegDecoder ffmpegDecoder;
+    public FFmpegDecoder FFmpegDecoder;
     public VideoTextureRenderer VideoTextureRenderer;
 
     [ExportCategory("Settings")]
@@ -288,8 +288,8 @@ public partial class Runner : Node3D
             VideoTextureRect.Visible = true; // could add a fade in tween
             VideoMesh.Transparency = (float)settings.VideoDim / 100;
 
-            ffmpegDecoder = new FFmpegDecoder(ffmpegPath, ffprobePath, $"{MapUtil.MapsFolder}/{Attempt.Map.Name}/video.mp4");
-            VideoTextureRenderer = new VideoTextureRenderer(ffmpegDecoder, 60, texture => VideoTextureRect.Texture = texture) { Name = "VideoRenderer" };
+            FFmpegDecoder = new FFmpegDecoder(ffmpegPath, ffprobePath, $"{MapUtil.MapsFolder}/{Attempt.Map.Name}/video.mp4");
+            VideoTextureRenderer = new VideoTextureRenderer(FFmpegDecoder, 60, texture => VideoTextureRect.Texture = texture) { Name = "VideoRenderer" };
             SceneManager.Instance.AddChild(VideoTextureRenderer);
 
             if ((float)Speed != 1) { ToastNotification.Notify("Videos currently only sync on 1x", 1); }
@@ -314,11 +314,12 @@ public partial class Runner : Node3D
         Playing = pause ?? !Playing;
         SoundManager.Song.PitchScale = (float)Speed;
         SoundManager.Song.StreamPaused = !Playing;
+        VideoTextureRenderer.IsPlaying = Playing;
 
         if (Playing)
         {
             syncSongPosition();
-            // syncVideoPosition();
+            syncVideoPosition();
         }
     }
 
@@ -355,7 +356,7 @@ public partial class Runner : Node3D
         RenderObjects(0);
 
         syncSongPosition();
-        // syncVideoPosition();
+        syncVideoPosition();
 
         // Discord.Client.UpdateEndTime(DateTime.UtcNow.AddSeconds((Time.GetUnixTimeFromSystem() + (Attempt.Map.Length - Attempt.Progress) / 1000 / Speed)));
     }
@@ -403,11 +404,11 @@ public partial class Runner : Node3D
             return;
         }
 
-        if (VideoTextureRenderer != null && ffmpegDecoder != null)
+        if (VideoTextureRenderer != null && FFmpegDecoder != null)
         {
             VideoTextureRenderer.QueueFree();
             VideoTextureRenderer = null;
-            ffmpegDecoder = null;
+            FFmpegDecoder = null;
         }
 
         // give objects a last chance
@@ -624,7 +625,6 @@ public partial class Runner : Node3D
             }
 
             SoundManager.Song.Seek((float)(Attempt.Progress - Attempt.Settings.LocalOffset) / 1000);
-            // VideoStreamPlayer.StreamPosition = (float)Attempt.Progress / 1000;
         }
     }
 
@@ -638,8 +638,7 @@ public partial class Runner : Node3D
                 VideoTextureRenderer.IsPlaying = true;
             }
 
-            // to be implemented
-            // VideoTextureRect.StreamPosition = (float)Attempt.Progress / 1000;
+            VideoTextureRenderer.SetPlaybackPosition(Attempt.Progress / 1000);
         }
     }
 }

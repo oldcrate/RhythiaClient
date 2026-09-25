@@ -34,9 +34,9 @@ public partial class VideoTextureRenderer : Node
 
     private int lastFrame = -1;
 
-    private double timeSinceLastChunk = 2; // the same as decode interval
+    private double timeSinceLastChunk = 0.5; // the same as decode interval
 
-    private double chunkDecodeInterval = 2;
+    private double chunkDecodeInterval = 0.5;
 
     private bool isReady = false;
 
@@ -95,5 +95,34 @@ public partial class VideoTextureRenderer : Node
     {
         SetProcess(false);
         Decoder.IsRunning = false;
+    }
+
+    public void SetPlaybackPosition(double playbackTime)
+    {
+        bool previousPlayingStatus = IsPlaying;
+
+        IsPlaying = false;
+
+        Decoder.IsRunning = false;
+        Decoder.KillExistingProcess();
+        Decoder.ClearDecodedFrames();
+
+        Decoder.IsRunning = true;
+        Decoder.GetVideoChunk(playbackTime, chunkDecodeInterval, Fps);
+
+        playbackPosition = playbackTime;
+        timeSinceLastChunk = 0;
+        lastFrame = (int)(playbackTime * Fps);
+
+        // if (Decoder.DecodedFrames.TryDequeue(out byte[] frameBytes))
+        // {
+        //     var image = Image.CreateFromData(Decoder.Width, Decoder.Height, false, Image.Format.Rgba8, frameBytes);
+        //     if (texture == null) { texture = ImageTexture.CreateFromImage(image); }
+        //     else { texture.Update(image); }
+
+        //     OnTextureUpdate(texture);
+        // }
+
+        IsPlaying = previousPlayingStatus;
     }
 }
