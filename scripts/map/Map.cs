@@ -85,6 +85,9 @@ public partial class Map : RefCounted
 
     [Ignore]
     public byte[] VideoBuffer { get; set; } = [];
+
+    public bool DisableVideo { get; set; }
+
     private Note[] notes;
 
     [Ignore]
