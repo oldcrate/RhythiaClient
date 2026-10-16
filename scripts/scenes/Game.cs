@@ -225,6 +225,8 @@ public partial class Game : BaseScene
 
         var parsedMap = MapParser.Decode(map.FolderPath, Rhythia.AudioFilePath);
 
+        parsedMap.Id = map.Id; // add lost id
+
         bool mapDisableVideo = DatabaseService.Connection.Get<Map>(map.Id).DisableVideo;
         bool globalVideoDisable = (bool)SettingsManager.Instance.Settings.DisableVideoGlobal;
         bool disableVideo = mapDisableVideo || globalVideoDisable;
@@ -243,16 +245,25 @@ public partial class Game : BaseScene
 
         var oldAttempt = Attempt;
         var map = MapParser.Decode(oldAttempt.Map.FolderPath, Rhythia.AudioFilePath);
-        Attempt = new(
+        map.Id = oldAttempt.Map.Id;
+
+        // bool mapDisableVideo = DatabaseService.Connection.Get<Map>(map.Id).DisableVideo;
+        // bool globalVideoDisable = (bool)SettingsManager.Instance.Settings.DisableVideoGlobal;
+        // bool disableVideo = mapDisableVideo || globalVideoDisable;
+
+        Attempt = new Attempt(
             map,
             oldAttempt.Speed,
             oldAttempt.StartFrom,
             oldAttempt.CameraMode,
             oldAttempt.Modifiers,
             oldAttempt.Players,
-            oldAttempt.Replays
+            oldAttempt.Replays,
+            oldAttempt.DisableVideo
         );
 
-        SceneManager.ReloadCurrentScene();
+        bool useVoidSpace = (bool)SettingsManager.Instance.Settings.VideoBgVoidSpace && !oldAttempt.DisableVideo;
+
+        SceneManager.Load("res://scenes/game.tscn", skipTransition: true, forceVoidBg: useVoidSpace);
     }
 }
