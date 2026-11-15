@@ -266,14 +266,14 @@ public partial class SettingsManager : Node
         switch (OS.GetName())
         {
             case "Windows":
-                OS.CreateProcess("powershell.exe", ["-Command", $"Wait-Process -Id {pid}; Start-Process '{executablePath}'"]);
+                OS.CreateProcess("powershell.exe", ["-Command", $"Wait-Process -Id {pid}; Start-Process '{executablePath.Replace("'", "''")}'"]);
                 break;
             case "macOS":
-                string executablePathMac = Path.Combine(executablePath, "../..");
-                OS.CreateProcess("/bin/sh", [$"while kill -0 {pid} 2>/dev/null; do sleep 0.1; done; open {executablePathMac}"]);
+                string executablePathMac = Path.GetFullPath(Path.Combine(executablePath, "../../.."));
+                OS.CreateProcess("/bin/sh", ["-c", $"while kill -0 {pid} 2>/dev/null; do sleep 0.1; done; open '{executablePathMac.Replace("'", "'\\''")}'"]);
                 break;
             case "Linux":
-                OS.CreateProcess("/bin/sh", [$"while kill -0 {pid} 2>/dev/null; do sleep 0.1; done; exec {executablePath}"]);
+                OS.CreateProcess("/bin/sh", ["-c", $"while kill -0 {pid} 2>/dev/null; do sleep 0.1; done; exec '{executablePath.Replace("'", "'\\''")}'"]);
                 break;
         }
 
